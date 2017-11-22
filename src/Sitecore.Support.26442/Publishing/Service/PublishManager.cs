@@ -443,6 +443,11 @@
     /// <param name="e">The <see cref="ExecutedEventArgs{TCommand}"/> instance containing the event data.</param>
     private void DataEngine_DeletedItem([CanBeNull] object sender, [NotNull] ExecutedEventArgs<DeleteItemCommand> e)
     {
+      if (string.IsNullOrWhiteSpace(e.Command.Item.Language.Name))
+      {
+        PublishingLog.Debug(string.Format("Item: {0} has an empty language value, item deleted event will be skipped", e.Command.Item.ID));
+        return;
+      }
       // override the itemPath as its not being passed by the data engine in this event
       var parentPath = GetItemPath(e.Command.Database.GetItem(e.Command.ParentId));
       var fullPath = string.Format("{0}/{1}", parentPath, e.Command.Item.ID.ToString());
@@ -456,6 +461,12 @@
     /// <param name="e">The <see cref="ExecutedEventArgs{TCommand}"/> instance containing the event data.</param>
     private void DataEngine_MovedItem([CanBeNull] object sender, [NotNull] ExecutedEventArgs<MoveItemCommand> e)
     {
+      if (string.IsNullOrWhiteSpace(e.Command.Item.Language.Name))
+      {
+        PublishingLog.Debug(string.Format("Item: {0} has an empty language value, item moved event will be skipped", e.Command.Item.ID));
+        return;
+      }
+
       EmitItemEvent(e.Command.Item, DateTime.UtcNow, GetRestrictions(e.Command.Item), PublisherOperationType.VariantSaved);
     }
 
@@ -476,6 +487,12 @@
     /// <param name="e">The <see cref="ExecutedEventArgs{TCommand}"/> instance containing the event data.</param>
     private void DataEngine_SavedItem([CanBeNull] object sender, [NotNull] ExecutedEventArgs<SaveItemCommand> e)
     {
+      if (string.IsNullOrWhiteSpace(e.Command.Item.Language.Name))
+      {
+        PublishingLog.Debug(string.Format("Item: {0} has an empty language value, item saved event will be skipped", e.Command.Item.ID));
+        return;
+      }
+
       EmitItemEvent(e.Command.Item, DateTime.UtcNow, GetRestrictions(e.Command.Item), PublisherOperationType.VariantSaved);
     }
 
